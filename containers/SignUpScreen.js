@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/core";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
   StyleSheet,
   Image,
@@ -15,7 +16,7 @@ const { redBnb } = colors;
 export default function SignUpScreen({ setToken }) {
   const navigation = useNavigation();
   return (
-    <View>
+    <KeyboardAwareScrollView>
       {/* Header */}
       <View style={styles.header}>
         <Image
@@ -65,7 +66,7 @@ export default function SignUpScreen({ setToken }) {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -73,7 +74,8 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: "center",
     alignItems: "center",
-    height: "20%",
+    flex: 1,
+    marginTop: "20%",
   },
   headerImg: {
     height: 130,
@@ -84,10 +86,11 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   form: {
-    height: "80%",
+    flex: 1,
+    marginTop: "20%",
     justifyContent: "space-around",
     paddingHorizontal: 30,
-    paddingTop: 20,
+    paddingTop: 10,
     paddingBottom: 80,
   },
   formInputs: {
