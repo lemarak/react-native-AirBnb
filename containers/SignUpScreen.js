@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import {
@@ -9,12 +9,73 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
+const axios = require("axios");
 
 import colors from "../assets/colors";
 const { redBnb } = colors;
 
 export default function SignUpScreen({ setToken }) {
   const navigation = useNavigation();
+
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [description, setDescription] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  // error
+  // 1: email non saisi
+  // 2: username non saisi
+  // 3: description non saisie
+  // 4: password non saisi
+  // 5: confirm password non saisi
+  // 6: passwords differents
+  // 7: bad authentification
+  // 8: unknow error
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async () => {
+    if (email && username && description && password && confirmPassword) {
+      if (password !== confirmPassword) {
+        setError(6);
+      } else {
+        const data = { email, password, username, description };
+        console.log(data);
+        try {
+          const response = await axios.post(
+            "https://express-airbnb-api.herokuapp.com/user/sign_up",
+            data
+          );
+          console.log(response.data);
+          const token = response.data.token;
+          if (token) {
+            setToken(token);
+            setError(0);
+            alert("C'est good !");
+          }
+        } catch (error) {
+          console.log(error.response.status);
+          if (error.response.status === 401) {
+            setError(3);
+          } else {
+            setError(4);
+          }
+        }
+      }
+    } else {
+      if (!email) {
+        setError(1);
+      } else if (!username) {
+        setError(2);
+      } else if (!description) {
+        setError(3);
+      } else if (!password) {
+        setError(4);
+      } else if (!confirmPassword) {
+        setError(5);
+      }
+    }
+  };
+
   return (
     <KeyboardAwareScrollView>
       {/* Header */}
@@ -30,29 +91,71 @@ export default function SignUpScreen({ setToken }) {
       {/* Form */}
       <View style={styles.form}>
         <View style={styles.formInputs}>
-          <TextInput style={styles.formInput} placeholder="email" />
+          <TextInput
+            style={styles.formInput}
+            placeholder="email"
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
+          />
+          {error === 1 && (
+            <Text style={styles.textError}>*email obligatoire</Text>
+          )}
 
           <TextInput
             style={styles.formInput}
-            placeholder="password"
-            secureTextEntry={true}
+            placeholder="username"
+            onChangeText={(text) => {
+              setUsername(text);
+            }}
           />
+          {error === 2 && (
+            <Text style={styles.textError}>*username obligatoire</Text>
+          )}
           <TextInput
             style={[styles.formInput, styles.formInputArea]}
             multiline={true}
             numberOfLines={4}
             textAlignVertical="top"
             placeholder="Describe yourself in few words..."
+            onChangeText={(text) => {
+              setDescription(text);
+            }}
           />
-          <TextInput style={styles.formInput} placeholder="password" />
-          <TextInput style={styles.formInput} placeholder="confirm password" />
+          {error === 3 && (
+            <Text style={styles.textError}>*description obligatoire</Text>
+          )}
+          <TextInput
+            style={styles.formInput}
+            placeholder="password"
+            secureTextEntry={true}
+            onChangeText={(text) => {
+              setPassword(text);
+            }}
+          />
+          {error === 4 && (
+            <Text style={styles.textError}>*mot de passe obligatoire</Text>
+          )}
+          <TextInput
+            style={styles.formInput}
+            placeholder="confirm password"
+            secureTextEntry={true}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+            }}
+          />
+          {error === 5 && (
+            <Text style={styles.textError}>*confirmation obligatoire</Text>
+          )}
+          {error === 6 && (
+            <Text style={styles.textError}>*mots de passe différents</Text>
+          )}
         </View>
         <View style={styles.formInputs}>
           <TouchableOpacity
             style={styles.formBtnValidate}
             onPress={async () => {
-              const userToken = "secret-token";
-              setToken(userToken);
+              handleSubmit();
             }}
           >
             <Text style={styles.formTextValidate}>Sign up</Text>
@@ -87,7 +190,7 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
-    marginTop: "20%",
+
     justifyContent: "space-around",
     paddingHorizontal: 30,
     paddingTop: 10,
@@ -102,7 +205,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderBottomColor: redBnb,
     borderBottomWidth: 1,
-    marginBottom: 26,
+    marginTop: 22,
+    marginBottom: 4,
   },
   formInputArea: {
     borderColor: redBnb,
@@ -119,9 +223,13 @@ const styles = StyleSheet.create({
     borderColor: redBnb,
     borderWidth: 2,
     borderRadius: 36,
-    marginBottom: 20,
+    marginTop: 20,
+    marginBottom: 10,
   },
   formTextValidate: {
     fontSize: 18,
+  },
+  textError: {
+    color: redBnb,
   },
 });

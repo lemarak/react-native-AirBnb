@@ -30,7 +30,6 @@ export default function SignInScreen({ setToken }) {
   const handleSubmit = async () => {
     if (email && password) {
       const data = { email, password };
-      console.log("email: ", email);
       try {
         const response = await axios.post(
           "https://express-airbnb-api.herokuapp.com/user/log_in",
@@ -59,6 +58,7 @@ export default function SignInScreen({ setToken }) {
       }
     }
   };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       {/* Header */}
