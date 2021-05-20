@@ -11,6 +11,7 @@ import {
 } from "react-native";
 const axios = require("axios");
 
+import Logo from "../components/Logo.js";
 import colors from "../assets/colors";
 const { redBnb } = colors;
 
@@ -80,11 +81,7 @@ export default function SignUpScreen({ setToken }) {
     <KeyboardAwareScrollView>
       {/* Header */}
       <View style={styles.header}>
-        <Image
-          style={styles.headerImg}
-          source={require("../assets/logo.png")}
-          resizeMode="contain"
-        />
+        <Logo />
         <Text style={styles.headerText}>Sign Up</Text>
       </View>
 

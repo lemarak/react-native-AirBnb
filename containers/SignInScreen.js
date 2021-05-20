@@ -12,6 +12,7 @@ import {
 
 const axios = require("axios");
 
+import Logo from "../components/Logo.js";
 import colors from "../assets/colors";
 const { redBnb } = colors;
 
@@ -63,11 +64,7 @@ export default function SignInScreen({ setToken }) {
     <KeyboardAwareScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Image
-          style={styles.headerImg}
-          source={require("../assets/logo.png")}
-          resizeMode="contain"
-        />
+        <Logo />
         <Text style={styles.headerText}>Sign In</Text>
       </View>
 
@@ -80,6 +77,7 @@ export default function SignInScreen({ setToken }) {
             onChangeText={(text) => {
               setEmail(text);
             }}
+            autoCapitalize="none"
           />
           {error === 1 && (
             <Text style={styles.textError}>*email obligatoire</Text>
@@ -89,6 +87,7 @@ export default function SignInScreen({ setToken }) {
             style={styles.formInput}
             placeholder="password"
             secureTextEntry={true}
+            autoCapitalize="none"
             onChangeText={(text) => {
               setPassword(text);
             }}

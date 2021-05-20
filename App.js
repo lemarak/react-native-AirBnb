@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
+
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import HomeScreen from "./containers/HomeScreen";
-import ProfileScreen from "./containers/ProfileScreen";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
+
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
+import HomeScreen from "./containers/HomeScreen";
+import RoomScreen from "./containers/RoomScreen";
+import AroundMe from "./containers/AroundMeScreen";
+import ProfileScreen from "./containers/ProfileScreen";
+
+import Logo from "./components/Logo";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -43,15 +49,15 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer options={{ headerShown: false }}>
       {isLoading ? null : userToken === null ? ( // We haven't finished checking for the token yet
         // No token found, user isn't signed in
         <Stack.Navigator>
-          <Stack.Screen name="SignIn" options={{ headerShown: false }}>
-            {() => <SignInScreen setToken={setToken} />}
+          <Stack.Screen name="SignIn">
+            {(props) => <SignInScreen {...props} setToken={setToken} />}
           </Stack.Screen>
-          <Stack.Screen name="SignUp" options={{ headerShown: false }}>
-            {() => <SignUpScreen setToken={setToken} />}
+          <Stack.Screen name="SignUp">
+            {(props) => <SignUpScreen {...props} setToken={setToken} />}
           </Stack.Screen>
         </Stack.Navigator>
       ) : (
@@ -75,25 +81,67 @@ export default function App() {
                   }}
                 >
                   {() => (
-                    <Stack.Navigator>
+                    <Stack.Navigator
+                      screenOptions={{
+                        headerStyle: { backgroundColor: "white" },
+                        headerTitle: () => <Logo size="small" />,
+                      }}
+                    >
+                      <Stack.Screen name="Home" options={{}}>
+                        {(props) => <HomeScreen {...props} />}
+                      </Stack.Screen>
                       <Stack.Screen
-                        name="Home"
+                        name="Room"
                         options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
+                          title: "Room",
+                          headerLeft: () => (
+                            <AntDesign
+                              name="arrowleft"
+                              size={24}
+                              color="black"
+                            />
+                          ),
                         }}
                       >
-                        {() => <HomeScreen />}
+                        {(props) => <RoomScreen {...props} />}
                       </Stack.Screen>
 
                       <Stack.Screen
                         name="Profile"
                         options={{
-                          title: "User Profile",
+                          title: "My Profile",
                         }}
                       >
                         {() => <ProfileScreen />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+
+                {/* Around Me */}
+                <Tab.Screen
+                  name="AroundMe"
+                  options={{
+                    tabBarLabel: "Around me",
+                    tabBarIcon: ({ color, size }) => (
+                      <AntDesign
+                        name={"enviroment"}
+                        size={size}
+                        color={color}
+                      />
+                    ),
+                  }}
+                >
+                  {() => (
+                    <Stack.Navigator>
+                      <Stack.Screen
+                        name="AroundMe"
+                        options={{
+                          title: "Around me",
+                          tabBarLabel: "Around Me",
+                        }}
+                      >
+                        {() => <AroundMe setToken={setToken} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
