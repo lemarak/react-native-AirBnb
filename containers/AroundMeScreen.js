@@ -7,11 +7,11 @@ import { StyleSheet, View, ActivityIndicator } from "react-native";
 import colors from "../assets/colors";
 const { redBnb } = colors;
 
-const AroundMeScreen = () => {
-  const [location, setLocation] = useState([]);
+const AroundMeScreen = ({ navigation }) => {
+  const [location, setLocation] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [authorize, setAuthorize] = useState(false);
-  const [locationClose, setLocationClose] = useState(null);
+  const [locationClose, setLocationClose] = useState([]);
 
   useEffect(() => {
     const getPermission = async () => {
@@ -25,6 +25,11 @@ const AroundMeScreen = () => {
             longitude: location.coords.longitude,
           });
           setAuthorize(true);
+        } else {
+          setLocation({
+            latitude: 42,
+            longitude: -1.6,
+          });
         }
       } catch (error) {
         console.log(error);
@@ -36,14 +41,19 @@ const AroundMeScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        let response;
         if (authorize) {
-          const response = await axios.get(
+          response = await axios.get(
             `https://express-airbnb-api.herokuapp.com/rooms/around?latitude=${location.latitude}&longitude=${location.longitude}`
           );
-          const locations = response.data.map((elem) => elem.location);
-          setLocationClose(locations);
-          setIsLoading(false);
+        } else {
+          response = await axios.get(
+            `https://express-airbnb-api.herokuapp.com/rooms/around`
+          );
         }
+        const locations = response.data.map((elem) => elem);
+        setLocationClose(locations);
+        setIsLoading(false);
       } catch (error) {
         console.log(error.message);
       }
@@ -56,8 +66,14 @@ const AroundMeScreen = () => {
       <MapView.Marker
         key={index}
         coordinate={{
-          latitude: elem[1],
-          longitude: elem[0],
+          latitude: elem.location[1],
+          longitude: elem.location[0],
+        }}
+        onPress={() => {
+          console.log(navigation);
+          navigation.navigate("Room", {
+            roomId: elem._id,
+          });
         }}
       />
     );

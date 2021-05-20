@@ -141,7 +141,7 @@ export default function App() {
                           tabBarLabel: "Around Me",
                         }}
                       >
-                        {() => <AroundMe setToken={setToken} />}
+                        {(props) => <AroundMe {...props} setToken={setToken} />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
